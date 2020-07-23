@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:opencloud_mobile/lib/fetch.dart';
+
 class IpForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -28,7 +29,7 @@ class IpFormState extends State<IpForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Form Demo")),
+        appBar: AppBar(title: Text("Connection Page"), backgroundColor: Colors.black,centerTitle: true,),
         body: Container(
           margin: EdgeInsets.all(50),
           child: Form(
@@ -40,7 +41,7 @@ class IpFormState extends State<IpForm> {
                   SizedBox(height: 100),
                   RaisedButton(
                     child: Text("Submit", style: TextStyle(color: Colors.black, fontSize: 17),),
-                    onPressed: () {if (!_formkey.currentState.validate()) {return;} _formkey.currentState.save(); Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "Fetch", ip:ip)));},
+                    onPressed: () {if (!_formkey.currentState.validate()) {return;} _formkey.currentState.save(); Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "OpenCloud", ip:ip)));},
                   )
                 ],
               )),

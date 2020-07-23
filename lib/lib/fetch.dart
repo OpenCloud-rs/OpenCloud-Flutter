@@ -40,6 +40,8 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        backgroundColor: Colors.black,
+        centerTitle: true,
       ),
       body: FutureBuilder<List<Folder>>(
         future: fetchFolder(http.Client(), ip),
