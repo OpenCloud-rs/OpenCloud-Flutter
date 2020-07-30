@@ -7,6 +7,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appTitle = "Form";
-    return MaterialApp(debugShowCheckedModeBanner: false,title: appTitle, home: IpForm());
+    return MaterialApp(
+        debugShowCheckedModeBanner: false, title: appTitle, home: IpForm());
   }
 }
