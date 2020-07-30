@@ -65,7 +65,7 @@ class _FetchAppState extends State<FetchApp> {
   }
 
   void changeFolder(String name) {
-    subip = subip.toString() + name;
+    subip = subip.toString() + name + "/";
     this.getJSONData(ip, subip);
   }
 
