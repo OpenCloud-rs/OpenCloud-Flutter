@@ -10,19 +10,48 @@ class IpForm extends StatefulWidget {
 
 class IpFormState extends State<IpForm> {
   String ip;
+  String name;
+  String password;
+
   final _formkey = GlobalKey<FormState>();
+
   Widget _buildIp() {
-    return TextFormField(
-        decoration: InputDecoration(labelText: "Ip"),
-        validator: (String value) {
-          if (value.isEmpty) {
-            return 'Please enter your ip adress server';
-          }
-          return null;
-        },
-        onSaved: (String value) {
-          ip = value;
-        });
+    return new Form(
+        child: new Column(children: [
+          TextFormField(
+              decoration: InputDecoration(labelText: "Ip"),
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please enter your ip adress server';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                ip = value;
+              }),
+          TextFormField(
+              decoration: InputDecoration(labelText: "Name"),
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please enter your Name user';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                name = value;
+              }),
+          TextFormField(
+              decoration: InputDecoration(labelText: "password"),
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please enter your password user';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                password = value;
+              })
+    ]));
   }
 
   @override
@@ -55,7 +84,7 @@ class IpFormState extends State<IpForm> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => FetchApp(ip: ip)));
+                              builder: (context) => FetchApp(ip: ip, name: name,password: password)));
                     },
                   )
                 ],

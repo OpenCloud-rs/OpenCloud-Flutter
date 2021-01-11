@@ -5,35 +5,59 @@ import 'dart:convert';
 import 'package:opencloud_mobile/component/card.dart';
 
 class FetchApp extends StatefulWidget {
-  FetchApp({Key key, this.ip}) : super(key: key);
+  FetchApp({Key key, this.ip, this.name, this.password}) : super(key: key);
 
   final String ip;
+  final String name;
+  final String password;
+
   @override
-  _FetchAppState createState() => _FetchAppState(ip: ip);
+  _FetchAppState createState() =>
+      _FetchAppState(ip: ip, password: password, name: name);
 }
 
 class _FetchAppState extends State<FetchApp> {
-  _FetchAppState({this.ip});
+  _FetchAppState({this.ip, this.password, this.name});
+
   List data;
-  final String ip;
-  String subip = "/api/";
+  String ip;
+  String token;
+  String name;
+  String password;
+  String current;
+  Color color;
+
   // Function to get the JSON data
-  Future<String> getJSONData(String ip, String subip) async {
-    var tocall = (ip + subip).toString();
-    print(tocall);
-    var response = await http.get(
-        // Encode the url
+  Future<String> getJSONData() async {
+    color = Colors.white;
+    if (this.token == null || this.token.isEmpty) {
+      await this.getToken(name, password, ip).then((String value) => this.token = value);
+    }
+    var url = (this.ip + "/api/file" + this.current).toString();
+    var hearders = {
+      "token": "${this.token}"
+    };
 
-        Uri.encodeFull(tocall),
-        // Only accept JSON response
-        headers: {"Accept": "application/json"});
-
+    var response = await http.get(Uri.encodeFull(url), headers: hearders);
     setState(() {
-      // Get the JSON data
-      data = json.decode(response.body)['content'];
+      try {
+        var decoded = json.decode(response.body.toString());
+        data = decoded['content'];
+        color = Colors.black;
+      } catch (e) {
+        color = Colors.red;
+        data = json.decode('{"content" : [{"result": true,"name": "Error","size": 305603,"created": "18-12-2020 22:05:23","modified": "18-12-2020 22:05:23","ftype": "Error"}]}')["content"] as List<dynamic>;
+        return "Error";
+      }
     });
 
     return "Successfull";
+  }
+
+  void checkVar() {
+    if (this.ip == null || this.ip.isEmpty) {
+      this.ip = "http://192.168.1.103:8081";
+    }
   }
 
   @override
@@ -41,6 +65,7 @@ class _FetchAppState extends State<FetchApp> {
     return Scaffold(
       appBar: AppBar(
         title: Text("OpenCloud"),
+        backgroundColor: color,
       ),
       body: _buildListView(),
     );
@@ -52,27 +77,58 @@ class _FetchAppState extends State<FetchApp> {
         itemCount: data == null ? 0 : data.length,
         itemBuilder: (context, index) {
           return _buildCard(data[index]);
-          // return _buildRow(data[index]);
         });
   }
 
   Widget _buildCard(dynamic item) {
     return MyCard(
-      title: new Text(item['name'] == null ? '' : item['name']),
-      but: new Text(item['ftype'].toString()),
+      title: item['name'] == null ? '' : utf8.decode(item['name'].toString().codeUnits),
+      but: item['ftype'].toString(),
       func: () => {changeFolder(item['name'] == null ? '' : item['name'])},
     );
   }
 
   void changeFolder(String name) {
-    subip = subip.toString() + name + "/";
-    this.getJSONData(ip, subip);
+    setState(() {
+      this.current = (this.current + name + "/").toString();
+    });
+    this.getJSONData();
   }
+
+  Future<String> getToken(String name, String password, String ip) async {
+    var tocall = (ip + "/api/user/login").toString();
+    print(tocall);
+    var response;
+    var token;
+    try {
+      var user = {"name": "Xx", "password": "Xx"};
+      var body = jsonEncode(user);
+      print(body);
+      response = await http.post(
+          // Encode the url
+          Uri.encodeFull(tocall),
+          // Only accept JSON response
+          headers: {"Content-Type": "application/json"},
+          body: body);
+      if (response.statusCode != 200) {
+        print("${response.body}");
+        print("Not a status : ${response.statusCode}");
+      } else {
+        token = response.body;
+        print(token);
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return token;
+  }
+
 
   @override
   void initState() {
     super.initState();
-    // Call the getJSONData() method when the app initializes
-    this.getJSONData(ip, subip);
+    this.checkVar();
+    this.getJSONData();
   }
 }
